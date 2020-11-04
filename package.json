@@ -9,7 +9,7 @@
         "db-undo": "sequelize db:migrate:undo:all",
         "db-init": "sequelize db:migrate",
         "create-model": "sequelize-cli model:generate --name ",
-        "dev": "ts-node-dev --respawn --transpile-only server.ts"
+        "dev": "ts-node-dev --transpile-only --inspect --ignore-watch node_modules src/server.ts"
     },
     "dependencies": {
         "express": "^4.17.1",

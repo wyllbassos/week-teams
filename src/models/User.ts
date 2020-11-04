@@ -1,7 +1,8 @@
+import { v4 } from 'uuid'
 import {
   Model,
   // ModelDefined,
-  // DataTypes,
+   DataTypes,
   // HasManyGetAssociationsMixin,
   // HasManyAddAssociationMixin,
   // HasManyHasAssociationMixin,
@@ -9,6 +10,7 @@ import {
   // HasManyCountAssociationsMixin,
   // HasManyCreateAssociationMixin,
   Optional,
+  Sequelize,
 } from "sequelize";
 
 //const sequelize = new Sequelize("mysql://root:asd123@localhost:3306/mydb");
@@ -19,6 +21,7 @@ export interface UserAttributes {
   firstName: string;
   lastName: string;
   email: string; // for nullable fields
+  
 }
 
 // Some attributes are optional in `User.build` and `User.create` calls
@@ -34,7 +37,34 @@ class User extends Model<UserAttributes, UserCreationAttributes>
   // timestamps!
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
-
+  
+  static userInit(sequelize:Sequelize){
+    User.init({
+        id: {
+          type: DataTypes.STRING(36),
+          primaryKey: true,
+          unique: true,
+          allowNull: false,
+          defaultValue: () => v4()
+        },
+        email: {
+          type: new DataTypes.STRING(128),
+          allowNull: false,
+        },
+        firstName: {
+          type: new DataTypes.STRING(128),
+          allowNull: true,
+        },
+        lastName: {
+          type: new DataTypes.STRING(128),
+          allowNull: true,
+        },
+      },{
+        sequelize,
+        tableName: "users",
+      }
+    );
+  }
 
   // Since TS cannot determine model association at compile time
   // we have to declare them here purely virtually

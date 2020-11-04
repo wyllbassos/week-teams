@@ -1,32 +1,16 @@
 import { Router } from 'express';
-import { Request, Response } from 'express'
+import UserController from './controllers/UserController'
+//import { Request, Response } from 'express'
+//import User, { UserAttributes, UserCreationAttributes } from './models/User';
+require('./database')
 
-import User, { UserAttributes, UserCreationAttributes } from './models/User';
-
-require('./database');
 
 const routes = Router()
 
-//require('./models/teste')
+routes.get('/users', UserController.index)
+routes.post('/users', UserController.store)
+routes.delete('/users/:id', UserController.delete)
+routes.put('/users/:id', UserController.update)
 
-routes.get('/create', async (req,res) => {
-    const user = {
-        firstName: "Wyll",
-        lastName: "Bassos",
-        email: "bassoscolorado@gmail.com"
-    }
-    try {
-        res.send(await User.create(user))
-    } catch (error) {
-        console.log(error)
-        res.send({error})
-    }
-    
-    
-})
-
-routes.get('/', async (req,res) => {
-    res.send(await User.findAll())
-})
 
 export default routes
