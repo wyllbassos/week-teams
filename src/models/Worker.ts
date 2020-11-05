@@ -5,6 +5,7 @@ import {
   Optional,
   Sequelize,
 } from "sequelize";
+import User from './User';
 
 export interface WorkerAttributes {
   id: string;
@@ -44,6 +45,11 @@ class Worker extends Model<WorkerAttributes, WorkerCreationAttributes>
         tableName: "workers",
       }
     );
+    //Worker.hasOne(User, { sourceKey: "id" });
+
+  }
+  static workerAssossiation(){
+    Worker.hasMany(User)
   }
 }
 

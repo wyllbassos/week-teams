@@ -5,8 +5,13 @@ const sequelize = new Sequelize(dbConfig);
 import User from '../models/User'
 import Worker from '../models/Worker';
 
+
 User.userInit(sequelize)
 Worker.workerInit(sequelize)
+
+
+ User.userAssossiation()
+ Worker.workerAssossiation()
 
 //User.associate(connection.models);
 export default sequelize;

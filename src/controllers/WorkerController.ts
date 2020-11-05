@@ -4,7 +4,9 @@ import { Request, Response } from 'express'
 const WorkerController = {
 
     async index(request: Request, response: Response) {
-        const workers:WorkerAttributes[] = await Worker.findAll();
+        const workers:WorkerAttributes[] = await Worker.findAll({
+            include: {all: true}
+        });
         
         return response.json(workers);
     },

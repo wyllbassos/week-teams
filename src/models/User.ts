@@ -3,25 +3,26 @@ import {
   Model,
   // ModelDefined,
    DataTypes,
-  // HasManyGetAssociationsMixin,
+   HasManyGetAssociationsMixin,
   // HasManyAddAssociationMixin,
   // HasManyHasAssociationMixin,
-  // Association,
+  Association,
   // HasManyCountAssociationsMixin,
   // HasManyCreateAssociationMixin,
   Optional,
   Sequelize,
 } from "sequelize";
-
+import Worker from './Worker';
+ 
 //const sequelize = new Sequelize("mysql://root:asd123@localhost:3306/mydb");
 
 // These are all the attributes in the User model
 export interface UserAttributes {
   id: string;
-  firstName: string;
-  lastName: string;
+  userLogin: string;
   email: string; // for nullable fields
-  
+  name: string;
+  workerId: string | null;
 }
 
 // Some attributes are optional in `User.build` and `User.create` calls
@@ -30,32 +31,50 @@ export interface UserCreationAttributes extends Optional<UserAttributes, "id"> {
 class User extends Model<UserAttributes, UserCreationAttributes>
   implements UserAttributes {
   public id!: string; // Note that the `null assertion` `!` is required in strict mode.
-  public firstName!: string;
-  public lastName!: string; // for nullable fields
-  public email!: string; // for nullable fields
-
+  public userLogin!: string; // for nullable fields
+  public email!: string;
+  public name!: string;
+  public workerId!: string;
+  
   // timestamps!
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
   
+
+  public readonly workers ? : Worker[]; // Note this is optional since it's only populated when explicitly requested in code
+  public getWorker!: HasManyGetAssociationsMixin < Worker > ; // Note the null assertions!
+
+  public static associations: {
+    workers: Association < User, Worker > ;
+  };
+
+
+
   static userInit(sequelize:Sequelize){
     User.init({
         id: {
-          type: DataTypes.STRING(36),
+          type: DataTypes.UUID,
           primaryKey: true,
           unique: true,
           allowNull: false,
-          defaultValue: () => v4()
+          defaultValue: DataTypes.UUIDV4,
+        },
+        userLogin: {
+          unique: true,
+          allowNull: false,
+          type: new DataTypes.STRING(128),
         },
         email: {
-          type: new DataTypes.STRING(128),
+          unique: true,
           allowNull: false,
-        },
-        firstName: {
           type: new DataTypes.STRING(128),
-          allowNull: true,
         },
-        lastName: {
+        name: {
+          allowNull: false,
+          type: new DataTypes.STRING(128),
+        },
+        workerId: {
+          unique: true,
           type: new DataTypes.STRING(128),
           allowNull: true,
         },
@@ -64,8 +83,11 @@ class User extends Model<UserAttributes, UserCreationAttributes>
         tableName: "users",
       }
     );
+    //User.hasOne(Worker, { sourceKey: "workerID" });
   }
-
+  static userAssossiation(){
+    User.belongsTo(Worker)
+  }
   // Since TS cannot determine model association at compile time
   // we have to declare them here purely virtually
   // these will not exist until `Model.init` was called.
